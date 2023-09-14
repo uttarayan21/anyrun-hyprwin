@@ -12,7 +12,7 @@ fn init(_: RString) -> Clients {
 fn info() -> PluginInfo {
     PluginInfo {
         name: "Hyprland Windows".into(),
-        icon: "help-about".into(), // Icon from the icon theme
+        icon: "window-new".into(),
     }
 }
 
@@ -31,7 +31,7 @@ fn get_matches(input: RString, clients: &Clients) -> RVec<Match> {
         .map(|client| {
             Match {
                 title: client.class.clone().into(),
-                icon: ROption::RSome(client.class.to_lowercase().into()),
+                icon: ROption::RSome(icon_from_class(client.class).into()),
                 use_pango: false,
                 description: ROption::RSome(client.title.into()),
                 id: ROption::RSome(client.pid as u64), // The ID can be used for identifying the match later, is not required
@@ -50,4 +50,13 @@ fn handler(selection: Match) -> HandleResult {
     )))
     .expect("Unable to focus hyprland window");
     HandleResult::Close
+}
+
+fn icon_from_class(class: String) -> String {
+    let class = class.to_lowercase();
+    if class.contains('.') {
+        class.split('.').last().unwrap_or_default().into()
+    } else {
+        class
+    }
 }
