@@ -16,7 +16,7 @@ cargo build --release # or `just build`
 
 And add `libhyprwin.so` to `plugins` array in your  `~/.config/anyrun/config.ron`
 
-```ron
+```diff
 diff --git a/config/anyrun/config.ron b/config/anyrun/config.ron
 index 80f32cc..d043da0 100644
 --- a/config/anyrun/config.ron
