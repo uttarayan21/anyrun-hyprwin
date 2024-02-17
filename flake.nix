@@ -15,8 +15,8 @@
           code = pkgs.callPackage ./. {inherit nixpkgs system rust-overlay;};
         in rec {
           packages = {
-            app = code.app;
-            default = packages.app;
+            hyprwin = code.app;
+            default = packages.hyprwin;
           };
         }
       );
