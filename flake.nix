@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "A plugin for anyrun to search for hyprland windows";
 
   inputs = {
     rust-overlay.url = "github:oxalica/rust-overlay";

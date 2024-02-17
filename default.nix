@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   app = pkgs.rustPlatform.buildRustPackage {
-    pname = "anyrun-hyprwin";
+    pname = "hyprwin";
     version = "0.1.0";
     src = ./.;
     cargoBuildFlags = "";
