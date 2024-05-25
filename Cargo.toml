@@ -9,7 +9,7 @@ edition = "2021"
 crate-type = ["cdylib"] # Required to build a dynamic library that can be loaded by anyrun
 
 [dependencies]
-anyrun-plugin = { git = "https://github.com/Kirottu/anyrun" }
+anyrun-plugin = "0.1.0"
 abi_stable = "0.11.1"
 hyprland = "0.3.11"
 serde = { version = "1.0.188", features = ["derive"] }
