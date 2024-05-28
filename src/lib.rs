@@ -28,12 +28,13 @@ fn init(_: RString) -> State {
     State {
         clients: Clients::get()
             .expect("Failed to get clients")
+            .iter()
             .filter(|client| !(client.title.is_empty() && client.class.is_empty()))
             .enumerate()
             .map(|(idx, client)| ClientId {
                 id: idx as u64,
                 search: format!("{}: {}", client.class, client.title),
-                client,
+                client: client.clone(),
             })
             .collect(),
     }
