@@ -60,7 +60,7 @@
         commonArgs =
           {
             inherit src;
-            pname = "anyrun-hyprwin";
+            pname = "hyprwin";
             doCheck = false;
             # LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
             # nativeBuildInputs = with pkgs; [
@@ -112,8 +112,8 @@
           };
 
         packages = rec {
-          anyrun-hyprwin = craneLib.buildPackage (commonArgs // {inherit cargoArtifacts;});
-          default = anyrun-hyprwin;
+          hyprwin = craneLib.buildPackage (commonArgs // {inherit cargoArtifacts;});
+          default = hyprwin;
         };
 
         devShells = {
