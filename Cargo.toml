@@ -1,16 +1,19 @@
 [package]
 name = "hyprwin"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
+license = "GPL-3.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-crate-type = ["cdylib"] # Required to build a dynamic library that can be loaded by anyrun
+crate-type = [
+  "cdylib",
+] # Required to build a dynamic library that can be loaded by anyrun
 
 [dependencies]
 anyrun-plugin = "0.1.0"
 abi_stable = "0.11.1"
-hyprland = "0.4.0-alpha.2"
+hyprland = "0.4.0-alpha.3"
 serde = { version = "1.0.188", features = ["derive"] }
 fuzzy-matcher = "0.3.7"
