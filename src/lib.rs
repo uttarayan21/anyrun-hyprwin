@@ -2,6 +2,7 @@ use core::ops::Deref;
 
 use abi_stable::std_types::{ROption, RString, RVec};
 use anyrun_plugin::*;
+use error_stack::ResultExt;
 use hyprland::data::{Client, Clients};
 use hyprland::shared::HyprData;
 
@@ -14,6 +15,7 @@ pub struct ClientId {
 
 pub struct State {
     pub clients: Vec<ClientId>,
+    pub config: Config,
 }
 
 impl Deref for ClientId {
@@ -23,11 +25,44 @@ impl Deref for ClientId {
     }
 }
 
+#[derive(Debug, Clone, thiserror::Error)]
+#[error("anyrun: hyprwin plugin error")]
+pub struct HyprwinError;
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
+pub struct Config {
+    prefix: String,
+}
+
+impl Config {
+    pub fn from_str(s: impl AsRef<str>) -> error_stack::Result<Self, HyprwinError> {
+        ron::de::from_str(s.as_ref())
+            .change_context(HyprwinError)
+            .attach_printable("Failed to parse config file for hyprwin")
+    }
+    pub fn from_path(p: impl AsRef<std::path::Path>) -> error_stack::Result<Self, HyprwinError> {
+        if !p.as_ref().exists() {
+            tracing::info!("No config file found for hyprwin");
+            return Ok(Self::default());
+        }
+        let contents = std::fs::read_to_string(p.as_ref())
+            .change_context(HyprwinError)
+            .attach_printable("Failed to read config file for hyprwin")?;
+        Self::from_str(contents)
+    }
+}
+
 #[init]
-fn init(_: RString) -> State {
-    State {
+fn init(config: RString) -> State {
+    init_result(config).expect("Failed to initialize hyprwin")
+}
+
+fn init_result(config: RString) -> error_stack::Result<State, HyprwinError> {
+    let config = Config::from_str(&config)?;
+    Ok(State {
         clients: Clients::get()
-            .expect("Failed to get clients")
+            .change_context(HyprwinError)
+            .attach_printable("Failed to get clients")?
             .iter()
             .filter(|client| !(client.title.is_empty() && client.class.is_empty()))
             .enumerate()
@@ -37,7 +72,8 @@ fn init(_: RString) -> State {
                 client: client.clone(),
             })
             .collect(),
-    }
+        config,
+    })
 }
 
 #[info]
@@ -52,6 +88,15 @@ fn info() -> PluginInfo {
 fn get_matches(input: RString, state: &State) -> RVec<Match> {
     use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
     let matcher = SkimMatcherV2::default();
+    let prefix = state.config.prefix.clone();
+    let input = if !input.starts_with(&prefix) {
+        return RVec::new();
+    } else {
+        input
+            .strip_prefix(&prefix)
+            .expect("UNEXPECTED: Should not fail please report this")
+            .to_string()
+    };
     state
         .clients
         .iter()
