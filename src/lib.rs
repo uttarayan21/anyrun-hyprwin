@@ -139,10 +139,10 @@ fn handler(selection: Match, state: &State) -> HandleResult {
 
 fn icon_from_class(class: impl AsRef<str>, icons: &HashMap<String, String>) -> String {
     let class = class.as_ref().to_lowercase();
-    if class.contains('.') {
-        class.split('.').last().unwrap_or_default().into()
-    } else if let Some(icon) = icons.get(&class) {
+    if let Some(icon) = icons.get(&class) {
         icon.clone()
+    } else if class.contains('.') {
+        class.split('.').last().unwrap_or_default().into()
     } else {
         class
     }
