@@ -30,3 +30,15 @@ index 80f32cc..d043da0 100644
      "libapplications.so",
      "libshell.so",
 ```
+
+
+## Config
+
+```ron
+Config(
+    prefix: Some(":hyprland"),
+    icons: {
+        "org.wezfurlong.wezterm": "wezterm";
+    }
+)
+```

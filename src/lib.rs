@@ -32,7 +32,9 @@ pub struct HyprwinError;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 pub struct Config {
+    #[serde(default)]
     prefix: String,
+    #[serde(default)]
     icons: HashMap<String, String>,
 }
 
