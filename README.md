@@ -36,7 +36,7 @@ index 80f32cc..d043da0 100644
 
 ```ron
 Config(
-    prefix: Some(":hyprland"),
+    prefix: ":hyprland",
     icons: {
         "org.wezfurlong.wezterm": "wezterm";
     }
