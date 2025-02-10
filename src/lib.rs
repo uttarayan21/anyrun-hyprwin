@@ -60,7 +60,8 @@ fn init(config: RString) -> State {
 }
 
 fn init_result(config: RString) -> error_stack::Result<State, HyprwinError> {
-    let config = Config::from_str(&config)?;
+    let config_path = std::path::Path::new(config.as_str()).join("hyprwin.ron");
+    let config = Config::from_path(config_path)?;
     Ok(State {
         clients: Clients::get()
             .change_context(HyprwinError)
