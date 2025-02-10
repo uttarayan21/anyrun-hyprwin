@@ -1,4 +1,5 @@
 use core::ops::Deref;
+use std::collections::HashMap;
 
 use abi_stable::std_types::{ROption, RString, RVec};
 use anyrun_plugin::*;
@@ -32,6 +33,7 @@ pub struct HyprwinError;
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 pub struct Config {
     prefix: String,
+    icons: HashMap<String, String>,
 }
 
 impl Config {
@@ -104,7 +106,7 @@ fn get_matches(input: RString, state: &State) -> RVec<Match> {
         .filter(|client| matcher.fuzzy_match(&client.search, &input).is_some())
         .map(|client| Match {
             title: client.class.clone().into(),
-            icon: ROption::RSome(icon_from_class(&client.class).into()),
+            icon: ROption::RSome(icon_from_class(&client.class, &state.config.icons).into()),
             use_pango: false,
             description: ROption::RSome(client.title.clone().into()),
             id: ROption::RSome(client.id),
@@ -132,10 +134,12 @@ fn handler(selection: Match, state: &State) -> HandleResult {
     HandleResult::Close
 }
 
-fn icon_from_class(class: impl AsRef<str>) -> String {
+fn icon_from_class(class: impl AsRef<str>, icons: &HashMap<String, String>) -> String {
     let class = class.as_ref().to_lowercase();
     if class.contains('.') {
         class.split('.').last().unwrap_or_default().into()
+    } else if let Some(icon) = icons.get(&class) {
+        icon.clone()
     } else {
         class
     }
