@@ -7,6 +7,8 @@ use error_stack::ResultExt;
 use hyprland::data::{Client, Clients};
 use hyprland::shared::HyprData;
 
+type Result<T, E = error_stack::Report<HyprwinError>> = core::result::Result<T, E>;
+
 #[derive(Debug, Clone)]
 pub struct ClientId {
     pub client: Client,
@@ -39,19 +41,19 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn from_str(s: impl AsRef<str>) -> error_stack::Result<Self, HyprwinError> {
+    pub fn from_str(s: impl AsRef<str>) -> Result<Self> {
         ron::de::from_str(s.as_ref())
             .change_context(HyprwinError)
-            .attach_printable("Failed to parse config file for hyprwin")
+            .attach("Failed to parse config file for hyprwin")
     }
-    pub fn from_path(p: impl AsRef<std::path::Path>) -> error_stack::Result<Self, HyprwinError> {
+    pub fn from_path(p: impl AsRef<std::path::Path>) -> Result<Self> {
         if !p.as_ref().exists() {
             tracing::info!("No config file found for hyprwin");
             return Ok(Self::default());
         }
         let contents = std::fs::read_to_string(p.as_ref())
             .change_context(HyprwinError)
-            .attach_printable("Failed to read config file for hyprwin")?;
+            .attach("Failed to read config file for hyprwin")?;
         Self::from_str(contents)
     }
 }
@@ -61,13 +63,13 @@ fn init(config: RString) -> State {
     init_result(config).expect("Failed to initialize hyprwin")
 }
 
-fn init_result(config: RString) -> error_stack::Result<State, HyprwinError> {
+fn init_result(config: RString) -> Result<State> {
     let config_path = std::path::Path::new(config.as_str()).join("hyprwin.ron");
     let config = Config::from_path(config_path)?;
     Ok(State {
         clients: Clients::get()
             .change_context(HyprwinError)
-            .attach_printable("Failed to get clients")?
+            .attach("Failed to get clients")?
             .iter()
             .filter(|client| !(client.title.is_empty() && client.class.is_empty()))
             .enumerate()

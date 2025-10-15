@@ -8,7 +8,7 @@ license = "GPL-3.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-anyrun-plugin = "0.1.0"
+anyrun-plugin = { git = "https://github.com/anyrun-org/anyrun" }
 abi_stable = "0.11.1"
 hyprland = "0.4.0-beta.3"
 serde = { version = "1", features = ["derive"] }
